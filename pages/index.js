@@ -1,82 +1,147 @@
-import Head from 'next/head'
+import Head from "next/head";
+import { useState } from "react";
+import Alert from "../components/Alert";
+import wordsReadTime, { wordsCount } from "../data/words-read-time";
 
 export default function Home() {
+  const [text, setText] = useState("");
+  const [placeholder, setPlaceholder] = useState("Enter text here");
+  const [copied, setCopied] = useState(false);
+  const timeTaken = wordsReadTime(text).wordTime * 60;
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+    <div className="min-h-screen flex flex-col bg-[#303041] text-[#f4fcfe]">
       <Head>
-        <title>Create Next App</title>
+        <title>TextUtils</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
-
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="p-3 font-mono text-lg bg-gray-100 rounded-md">
-            pages/index.js
-          </code>
-        </p>
-
-        <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
+      <header className="text-3xl font-bold p-5 bg-[#29262b] mb-10 flex justify-between items-center">
+        <h1>TextUtils</h1>
+        {copied ? (
+          <Alert text="Text copied successfully" show={copied} />
+        ) : null}
+      </header>
+      <div className="flex justify-center">
+        <div className="flex flex-col items-center w-[80%] ">
+          <textarea
+            name="text"
+            className="bg-[#3d3a50] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg py-2 px-4 block appearance-none leading-normal w-full"
+            id="text"
+            rows="10"
+            placeholder={placeholder}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          ></textarea>
+          <div className="flex space-x-3 my-5 flex-wrap justify-center space-y-2">
+            <button
+              className="bg-[#0ea2f6] hover:bg-[#0081cc] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg py-2 px-4 block appearance-none leading-normal"
+              onClick={() => {
+                setText(text.toUpperCase());
+                setPlaceholder(placeholder.toUpperCase());
+              }}
+            >
+              To uppercase
+            </button>
+            <button
+              className="bg-[#0ea2f6] hover:bg-[#0081cc] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg py-2 px-4 block appearance-none leading-normal"
+              onClick={() => {
+                setText(text.toLowerCase());
+                setPlaceholder(placeholder.toLowerCase());
+              }}
+            >
+              To lowercase
+            </button>
+            <button
+              className="bg-[#0ea2f6] hover:bg-[#0081cc] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg py-2 px-4 block appearance-none leading-normal"
+              onClick={() => {
+                setText(text.split("").reverse().join(""));
+                setPlaceholder(placeholder.split("").reverse().join(""));
+              }}
+            >
+              Reverse Text
+            </button>
+            <button
+              className="bg-[#0ea2f6] hover:bg-[#0081cc] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg py-2 px-4 block appearance-none leading-normal"
+              onClick={() => {
+                navigator.clipboard.writeText(text);
+                // set copied true for one second and then set it to false
+                setCopied(true);
+                setTimeout(() => {
+                  setCopied(false);
+                }, 2000);
+              }}
+            >
+              Copy Text
+            </button>
+            <button
+              className="bg-[#0ea2f6] hover:bg-[#0081cc] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg py-2 px-4 block appearance-none leading-normal"
+              onClick={() => {
+                setText("");
+                setPlaceholder("Enter text here");
+              }}
+            >
+              Clear Board
+            </button>
+            {/* Add random text */}
+            <button
+              className="bg-[#0ea2f6] hover:bg-[#0081cc] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg py-2 px-4 block appearance-none leading-normal"
+              onClick={() => {
+                setText(
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                );
+                setPlaceholder("Last added Random Text");
+              }}
+            >
+              Random Text
+            </button>
+            <button
+              className="bg-[#0ea2f6] hover:bg-[#0081cc] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg px-4 block appearance-none leading-normal"
+              onClick={() => {
+                setText(text.split(" ").join("\n"));
+                setPlaceholder(placeholder.split(" ").join("\n"));
+              }}
+            >
+              Split by space
+            </button>
+            <button
+              className="bg-[#0ea2f6] hover:bg-[#0081cc] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg py-2 px-4 block appearance-none leading-normal"
+              onClick={() => {
+                setText(text.split("\n").join(" "));
+                setPlaceholder(placeholder.split("\n").join(" "));
+              }}
+            >
+              Split by new line
+            </button>
+            <button
+              className="bg-[#0ea2f6] hover:bg-[#0081cc] focus:outline-none focus:shadow-xl focus:border-[#0ea2f6] transition border-2 rounded-lg py-2 px-4 block appearance-none leading-normal"
+              onClick={() => {
+                setText(text.split("").join("\n"));
+                setPlaceholder(placeholder.split("").join("\n"));
+              }}
+            >
+              Split by character
+            </button>
+            {/* Add more features to it */}
+          </div>
+          <section id="results" className="my-5">
+            <h2 className="text-2xl font-bold text-center">Results</h2>
+            <div className="flex flex-col space-y-2 my-5">
+              Word count: {wordsCount(text)}
+            </div>
+            <div className="flex flex-col space-y-2">
+              Time taken to read(seconds): {timeTaken.toFixed(2)}
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer className="bg-[#1f1301] text[#f7f7f7] p-3 mt-auto w-full bottom-0">
+        <div className="flex justify-center">
+          &copy; Copyright 2021-22 |{" "}
+          <a href="https://adion.vercel.app/" targe="_blank">
+            Adion
           </a>
         </div>
-      </main>
-
-      <footer className="flex items-center justify-center w-full h-24 border-t">
-        <a
-          className="flex items-center justify-center"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="h-4 ml-2" />
-        </a>
       </footer>
     </div>
-  )
+  );
 }
